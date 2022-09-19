@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SystemCpu } from 'src/app/interfaces/system-cpu';
+import { SystemHealth } from 'src/app/interfaces/system-health';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -15,12 +17,12 @@ export class AdminDashboardService {
     return this.http.get<unknown>(`${this.SERVER_URL}/httptrace`);
   }
 
-  public getSystemHealth(): Observable<unknown> {
-    return this.http.get<unknown>(`${this.SERVER_URL}/health`);
+  public getSystemHealth(): Observable<SystemHealth> {
+    return this.http.get<SystemHealth>(`${this.SERVER_URL}/health`);
   }
 
-  public getSystemCpu(): Observable<unknown> {
-    return this.http.get<unknown>(
+  public getSystemCpu(): Observable<SystemCpu> {
+    return this.http.get<SystemCpu>(
       `${this.SERVER_URL}/metrics/system.cup.count`
     );
   }
