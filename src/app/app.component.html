@@ -21,7 +21,16 @@
         <span><i class="fa fa-server"></i> System: </span>&nbsp;&nbsp;
         <span><i class="fa fa-database"></i> DB: </span>&nbsp;
         <span><i class="fa fa-hdd-o"></i> Disk Space: </span>&nbsp;&nbsp;
-        <span><i class="fa fa-microchip"></i> Processors: </span>&nbsp;&nbsp;
+        <span
+          [ngClass]="{
+            'text-danger':
+              systemCpu.measurements && systemCpu.measurements[0].value < 5
+          }"
+          ><i class="fa fa-microchip"></i> Processors:
+          {{
+            systemCpu.measurements ? systemCpu.measurements[0].value : ""
+          }} </span
+        >&nbsp;&nbsp;
         <span><i class="fa fa-clock-o"></i> Up Time: </span>
       </li>
     </ul>

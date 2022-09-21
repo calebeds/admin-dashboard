@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { SystemCpu } from './interfaces/system-cpu';
 import { SystemHealth } from './interfaces/system-health';
@@ -45,14 +46,21 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.getTraces();
+    this.getCpuUsage();
   }
 
   private getTraces(): void {
-    this.dashboardService.getHttpTraces().subscribe((res) => {
-      console.log((res as { traces: Trace[] }).traces);
-      this.processTraces((res as { traces: Trace[] }).traces);
-    });
+    this.dashboardService.getHttpTraces().subscribe(
+      (res) => {
+        console.log((res as { traces: Trace[] }).traces);
+        this.processTraces((res as { traces: Trace[] }).traces);
+      },
+      (error: HttpErrorResponse) => {
+        console.error(error.message);
+      }
+    );
   }
+
   private processTraces(traces: Trace[]): void {
     this.traceList = traces;
     this.traceList?.forEach((trace) => {
@@ -78,5 +86,17 @@ export class AppComponent implements OnInit {
   public onSelectTrace(trace: Trace): void {
     this.selectedTrace = trace;
     document.getElementById('trace-modal')?.click(); //Click hidden button to open modal
+  }
+
+  private getCpuUsage(): void {
+    this.dashboardService.getSystemCpu().subscribe(
+      (res: SystemCpu) => {
+        console.log(res);
+        this.systemCpu = res;
+      },
+      (error: HttpErrorResponse) => {
+        console.error(error.message);
+      }
+    );
   }
 }

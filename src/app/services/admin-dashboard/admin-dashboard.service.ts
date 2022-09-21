@@ -23,7 +23,7 @@ export class AdminDashboardService {
 
   public getSystemCpu(): Observable<SystemCpu> {
     return this.http.get<SystemCpu>(
-      `${this.SERVER_URL}/metrics/system.cup.count`
+      `${this.SERVER_URL}/metrics/system.cpu.count`
     );
   }
 
