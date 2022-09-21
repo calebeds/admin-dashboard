@@ -47,6 +47,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.getTraces();
     this.getCpuUsage();
+    this.getSystemHealth();
   }
 
   private getTraces(): void {
@@ -98,5 +99,35 @@ export class AppComponent implements OnInit {
         console.error(error.message);
       }
     );
+  }
+
+  private getSystemHealth(): void {
+    this.dashboardService.getSystemHealth().subscribe(
+      (res: SystemHealth) => {
+        console.log(res);
+        this.systemHealth = res;
+        this.formatBytes();
+      },
+      (error: HttpErrorResponse) => {
+        console.error(error.message);
+      }
+    );
+  }
+
+  private formatBytes(): void {
+    const bytes = this.systemHealth.components.diskSpace.details.free;
+    if (bytes === 0) {
+      this.systemHealth.components.diskSpace.details.free = '0 Bytes';
+      return;
+    }
+
+    const k = 1024;
+    const dm = 2 < 0 ? 0 : 2;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes as number) / Math.log(k));
+    this.systemHealth.components.diskSpace.details.free =
+      parseFloat(((bytes as number) / Math.pow(k, i)).toFixed(dm)) +
+      ' ' +
+      sizes[i];
   }
 }

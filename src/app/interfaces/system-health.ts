@@ -12,7 +12,7 @@ export interface SystemHealth {
       status: string;
       details: {
         total: number;
-        free: number;
+        free: number | string;
         threshold: number;
         exists: boolean;
       };

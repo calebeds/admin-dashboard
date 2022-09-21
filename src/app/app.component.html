@@ -18,9 +18,30 @@
   <div class="collapse navbar-collapse" id="nav">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <span><i class="fa fa-server"></i> System: </span>&nbsp;&nbsp;
-        <span><i class="fa fa-database"></i> DB: </span>&nbsp;
-        <span><i class="fa fa-hdd-o"></i> Disk Space: </span>&nbsp;&nbsp;
+        <span
+          ><i class="fa fa-server"></i> System:
+          {{ systemHealth.status ? systemHealth.status : "" }}</span
+        >&nbsp;&nbsp;
+        <span
+          ><i class="fa fa-database"></i> DB:
+          {{
+            systemHealth.components
+              ? systemHealth.components.db.details.database
+              : ""
+          }}
+          -
+          {{
+            systemHealth.components ? systemHealth.components.db.status : ""
+          }}</span
+        >&nbsp;
+        <span
+          ><i class="fa fa-hdd-o"></i> Disk Space:
+          {{
+            systemHealth.components
+              ? systemHealth.components.diskSpace.details.free
+              : ""
+          }}</span
+        >&nbsp;&nbsp;
         <span
           [ngClass]="{
             'text-danger':
