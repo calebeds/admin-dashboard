@@ -40,9 +40,12 @@
           >&nbsp;
           <h6 class="m-b-20" style="margin-top: -20px">200 Response</h6>
           <h2 class="text-right" style="margin-top: -40px">
-            <span>55</span>
+            <span>{{ http200Traces?.length }}</span>
           </h2>
-          <p class="m-b-0">Updated:<span class="f-right"></span></p>
+          <p class="m-b-0">
+            Updated:<span class="f-right"></span>
+            {{ http200Traces[0]?.timestamp | date: "short" }}
+          </p>
         </div>
       </div>
     </div>
@@ -53,9 +56,12 @@
           <i class="fa fa-ban f-left" style="margin-right: 5px"></i>&nbsp;
           <h6 class="m-b-20" style="margin-top: -20px">404 Response</h6>
           <h2 class="text-right" style="margin-top: -40px">
-            <span>4</span>
+            <span>{{ http404Traces?.length }}</span>
           </h2>
-          <p class="m-b-0">Updated:<span class="f-right"></span></p>
+          <p class="m-b-0">
+            Updated:<span class="f-right"></span
+            >{{ http404Traces[0]?.timestamp | date: "short" }}
+          </p>
         </div>
       </div>
     </div>
@@ -70,9 +76,12 @@
           >&nbsp;
           <h6 class="m-b-20" style="margin-top: -20px">400 Response</h6>
           <h2 class="text-right" style="margin-top: -40px">
-            <span>5</span>
+            <span>{{ http400Traces?.length }}</span>
           </h2>
-          <p class="m-b-0">Updated:<span class="f-right"></span></p>
+          <p class="m-b-0">
+            Updated:<span class="f-right"></span
+            >{{ http400Traces[0]?.timestamp | date: "short" }}
+          </p>
         </div>
       </div>
     </div>
@@ -83,9 +92,12 @@
           <i class="fa fa-bug f-left" style="margin-right: 5px"></i>&nbsp;
           <h6 class="m-b-20" style="margin-top: -20px">500 Response</h6>
           <h2 class="text-right" style="margin-top: -40px">
-            <span>0</span>
+            <span>{{ http500Traces?.length }}</span>
           </h2>
-          <p class="m-b-0">Updated:<span class="f-right"></span></p>
+          <p class="m-b-0">
+            Updated:<span class="f-right"></span
+            >{{ http500Traces[0]?.timestamp | date: "short" }}
+          </p>
         </div>
       </div>
     </div>
@@ -124,18 +136,32 @@
           </tr>
         </thead>
         <tbody>
-          <tr style="cursor: pointer">
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-              <span></span>
-              <span class="badge badge-info"></span>
-              <span class="badge badge-warning"></span>
-              <span class="badge badge-danger"></span>
-              <span class="badge badge-primary"></span>
+          <tr
+            *ngFor="let trace of traceList"
+            style="cursor: pointer"
+            (click)="onSelectTrace(trace)"
+          >
+            <td>{{ trace.timestamp | date: "medium" }}</td>
+            <td>{{ trace.request.method }}</td>
+            <td>{{ trace.timeTaken }}</td>
+            <td [ngSwitch]="trace.response.status">
+              <span *ngSwitchCase="'200'" class="badge badge-success">{{
+                trace.response.status
+              }}</span>
+              <span *ngSwitchCase="'400'" class="badge badge-info">{{
+                trace.response.status
+              }}</span>
+              <span *ngSwitchCase="'404'" class="badge badge-warning">{{
+                trace.response.status
+              }}</span>
+              <span *ngSwitchCase="'500'" class="badge badge-danger">{{
+                trace.response.status
+              }}</span>
+              <span *ngSwitchDefault class="badge badge-primary">{{
+                trace.response.status
+              }}</span>
             </td>
-            <td></td>
+            <td>{{ trace.request.uri }}</td>
             <td>
               <button class="btn btn-outline-info">
                 <i class="fa fa-eye"></i>
