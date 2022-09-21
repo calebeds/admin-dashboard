@@ -41,6 +41,7 @@ export class AppComponent implements OnInit {
   public http404Traces: Trace[] = [];
   public http500Traces: Trace[] = [];
   public httpDefaultTraces: Trace[] = [];
+  public timestamp = 0;
 
   constructor(private dashboardService: AdminDashboardService) {}
 
@@ -48,6 +49,12 @@ export class AppComponent implements OnInit {
     this.getTraces();
     this.getCpuUsage();
     this.getSystemHealth();
+    this.getProcessUpTime(true);
+  }
+
+  public onSelectTrace(trace: Trace): void {
+    this.selectedTrace = trace;
+    document.getElementById('trace-modal')?.click(); //Click hidden button to open modal
   }
 
   private getTraces(): void {
@@ -55,6 +62,47 @@ export class AppComponent implements OnInit {
       (res) => {
         console.log((res as { traces: Trace[] }).traces);
         this.processTraces((res as { traces: Trace[] }).traces);
+      },
+      (error: HttpErrorResponse) => {
+        console.error(error.message);
+      }
+    );
+  }
+
+  private getCpuUsage(): void {
+    this.dashboardService.getSystemCpu().subscribe(
+      (res: SystemCpu) => {
+        console.log(res);
+        this.systemCpu = res;
+      },
+      (error: HttpErrorResponse) => {
+        console.error(error.message);
+      }
+    );
+  }
+
+  private getSystemHealth(): void {
+    this.dashboardService.getSystemHealth().subscribe(
+      (res: SystemHealth) => {
+        console.log(res);
+        this.systemHealth = res;
+        this.formatBytes();
+      },
+      (error: HttpErrorResponse) => {
+        console.error(error.message);
+      }
+    );
+  }
+
+  private getProcessUpTime(isUpdateTime: boolean): void {
+    this.dashboardService.getProcessUptime().subscribe(
+      (res) => {
+        console.log(res);
+        this.timestamp = Math.round(
+          (res as { measurements: { value: number }[] }).measurements[0].value
+        );
+        this.processUpTime = this.formatUpTime(this.timestamp);
+        if (isUpdateTime) this.updateTime();
       },
       (error: HttpErrorResponse) => {
         console.error(error.message);
@@ -84,34 +132,20 @@ export class AppComponent implements OnInit {
     });
   }
 
-  public onSelectTrace(trace: Trace): void {
-    this.selectedTrace = trace;
-    document.getElementById('trace-modal')?.click(); //Click hidden button to open modal
+  private updateTime(): void {
+    setInterval(() => {
+      ++this.timestamp;
+      this.processUpTime = this.formatUpTime(this.timestamp);
+    }, 1000);
   }
 
-  private getCpuUsage(): void {
-    this.dashboardService.getSystemCpu().subscribe(
-      (res: SystemCpu) => {
-        console.log(res);
-        this.systemCpu = res;
-      },
-      (error: HttpErrorResponse) => {
-        console.error(error.message);
-      }
-    );
-  }
-
-  private getSystemHealth(): void {
-    this.dashboardService.getSystemHealth().subscribe(
-      (res: SystemHealth) => {
-        console.log(res);
-        this.systemHealth = res;
-        this.formatBytes();
-      },
-      (error: HttpErrorResponse) => {
-        console.error(error.message);
-      }
-    );
+  private formatUpTime(timestamp: number): string {
+    const hours = Math.floor(timestamp / 60 / 60);
+    const minutes = Math.floor(timestamp / 60) - hours * 60;
+    const seconds = timestamp % 60;
+    return `${hours.toString().padStart(2, '0')}h ${minutes
+      .toString()
+      .padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
   }
 
   private formatBytes(): void {
