@@ -1,1 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
+@import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css");
+
+#nav ul {
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  width: 60%;
+}
