@@ -11,9 +11,15 @@ type Trace = {
     method: string;
     uri: string;
     remoteAddress: unknown;
+    headers: { origin: string; ['user-agent']: string };
   };
   response: {
     status: number;
+    headers: {
+      ['Date']: string;
+      ['Content-Type']: string;
+      ['Access-Control-Allow-Origin']: string;
+    };
   };
   timeTaken: number;
 };
@@ -25,7 +31,7 @@ type Trace = {
 })
 export class AppComponent implements OnInit {
   public traceList: Trace[] = [];
-  public selectTrace: unknown;
+  public selectedTrace!: Trace;
   public systemHealth: SystemHealth = {} as SystemHealth;
   public systemCpu: SystemCpu = {} as SystemCpu;
   public processUpTime = '';
@@ -70,6 +76,7 @@ export class AppComponent implements OnInit {
   }
 
   public onSelectTrace(trace: Trace): void {
+    this.selectedTrace = trace;
     document.getElementById('trace-modal')?.click(); //Click hidden button to open modal
   }
 }

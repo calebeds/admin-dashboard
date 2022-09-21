@@ -229,43 +229,69 @@
         <div class="tab-content">
           <div class="tab-pane fade show active" id="request">
             <p>
-              <strong>Time Stamp:</strong>
+              <strong>Time Stamp: </strong>
+              {{ selectedTrace?.timestamp | date: "medium" }}
             </p>
             <p>
-              <strong>Time Taken(ms):</strong>
+              <strong>Time Taken(ms): </strong>
+              {{ selectedTrace?.timeTaken }}
             </p>
             <p>
-              <strong>Request Method:</strong>
+              <strong>Request Method: </strong>
+              {{ selectedTrace?.request?.method }}
             </p>
             <p>
-              <strong>Remote Address:</strong>
+              <strong>Remote Address: </strong>
+              {{ selectedTrace?.request?.remoteAddress }}
             </p>
             <p>
-              <strong>URI:</strong>
+              <strong>URI: </strong>
+              {{ selectedTrace?.request?.uri }}
             </p>
             <p>
-              <strong>Origin:</strong>
+              <strong>Origin: </strong>
+              {{ selectedTrace?.request?.headers?.origin }}
             </p>
             <p>
-              <strong>User Agent (Web Client):</strong>
+              <strong>User Agent (Web Client): </strong>
+              {{
+                selectedTrace ? selectedTrace.request.headers["user-agent"] : ""
+              }}
             </p>
           </div>
 
           <div class="tab-pane fade" id="response">
             <dl>
               <dt>Status:</dt>
-              <dd></dd>
+              <dd>{{ selectedTrace?.response?.status }}</dd>
             </dl>
             <dl>
               <dt>Date:</dt>
-              <dd></dd>
+              <dd>
+                {{
+                  selectedTrace ? selectedTrace.response.headers["Date"] : ""
+                }}
+              </dd>
             </dl>
             <dl>
               <dt>Content Type:</dt>
-              <dd></dd>
+              <dd>
+                {{
+                  selectedTrace
+                    ? selectedTrace.response.headers["Content-Type"]
+                    : ""
+                }}
+              </dd>
             </dl>
             <p>
               <strong>Server Allowed Origins:</strong>
+              {{
+                selectedTrace
+                  ? selectedTrace.response.headers[
+                      "Access-Control-Allow-Origin"
+                    ]
+                  : ""
+              }}
             </p>
           </div>
         </div>
