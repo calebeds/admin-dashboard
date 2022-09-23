@@ -94,6 +94,22 @@ export class AppComponent implements OnInit {
     );
   }
 
+  public onRefreshData(): void {
+    this.resetArrays();
+    this.getTraces();
+    this.getCpuUsage();
+    this.getSystemHealth();
+    this.getProcessUpTime(false);
+  }
+
+  private resetArrays(): void {
+    this.http200Traces = [];
+    this.http400Traces = [];
+    this.http404Traces = [];
+    this.http500Traces = [];
+    this.httpDefaultTraces = [];
+  }
+
   private getProcessUpTime(isUpdateTime: boolean): void {
     this.dashboardService.getProcessUptime().subscribe(
       (res) => {
