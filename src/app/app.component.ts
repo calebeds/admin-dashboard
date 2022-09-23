@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Chart, ChartItem, registerables } from 'chart.js';
 import { SystemCpu } from './interfaces/system-cpu';
 import { SystemHealth } from './interfaces/system-health';
 import { AdminDashboardService } from './services/admin-dashboard/admin-dashboard.service';
@@ -42,6 +43,7 @@ export class AppComponent implements OnInit {
   public http500Traces: Trace[] = [];
   public httpDefaultTraces: Trace[] = [];
   public timestamp = 0;
+  public barChart!: Chart;
 
   constructor(private dashboardService: AdminDashboardService) {}
 
@@ -50,6 +52,55 @@ export class AppComponent implements OnInit {
     this.getCpuUsage();
     this.getSystemHealth();
     this.getProcessUpTime(true);
+  }
+
+  private initializeBarChart(): void {
+    if (this.barChart) this.barChart.destroy();
+    Chart.register(...registerables);
+    const barChartElement = document.getElementById('barChart');
+    this.barChart = new Chart(<ChartItem>barChartElement, {
+      type: 'bar',
+      data: {
+        labels: ['200', '404', '400', '500'],
+        datasets: [
+          {
+            data: [
+              this.http200Traces.length,
+              this.http404Traces.length,
+              this.http400Traces.length,
+              this.http500Traces.length,
+            ],
+            backgroundColor: [
+              'rgb(40, 167, 69)',
+              'rgb(0, 123, 255)',
+              'rgb(253, 126, 20)',
+              'rgb(220, 53, 69)',
+            ],
+            borderColor: [
+              'rgb(40, 167, 69)',
+              'rgb(0, 123, 255)',
+              'rgb(253, 126, 20)',
+              'rgb(220, 53, 69)',
+            ],
+            borderWidth: 3,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: [`Last 100 Requests as of ${new Date()}`],
+          },
+          legend: { display: false },
+        },
+        scales: {
+          x: {
+            min: 0,
+          },
+        },
+      },
+    });
   }
 
   public onSelectTrace(trace: Trace): void {
@@ -62,6 +113,8 @@ export class AppComponent implements OnInit {
       (res) => {
         console.log((res as { traces: Trace[] }).traces);
         this.processTraces((res as { traces: Trace[] }).traces);
+
+        this.initializeBarChart();
       },
       (error: HttpErrorResponse) => {
         console.error(error.message);
