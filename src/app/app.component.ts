@@ -44,6 +44,7 @@ export class AppComponent implements OnInit {
   public httpDefaultTraces: Trace[] = [];
   public timestamp = 0;
   public barChart!: Chart;
+  public pieChart!: Chart;
 
   constructor(private dashboardService: AdminDashboardService) {}
 
@@ -90,7 +91,11 @@ export class AppComponent implements OnInit {
         plugins: {
           title: {
             display: true,
-            text: [`Last 100 Requests as of ${new Date()}`],
+            text: [
+              `Last 100 Requests as of ${new Date().toLocaleDateString(
+                'en-US'
+              )}`,
+            ],
           },
           legend: { display: false },
         },
@@ -98,6 +103,55 @@ export class AppComponent implements OnInit {
           x: {
             min: 0,
           },
+        },
+      },
+    });
+  }
+
+  private initializePieChart(): void {
+    if (this.pieChart) this.pieChart.destroy();
+    Chart.register(...registerables);
+
+    const pieChartElement = document.getElementById('pieChart');
+    this.pieChart = new Chart(<ChartItem>pieChartElement, {
+      type: 'pie',
+      data: {
+        labels: ['200', '404', '400', '500'],
+        datasets: [
+          {
+            data: [
+              this.http200Traces.length,
+              this.http404Traces.length,
+              this.http400Traces.length,
+              this.http500Traces.length,
+            ],
+            backgroundColor: [
+              'rgb(40, 167, 69)',
+              'rgb(0, 123, 255)',
+              'rgb(253, 126, 20)',
+              'rgb(220, 53, 69)',
+            ],
+            borderColor: [
+              'rgb(40, 167, 69)',
+              'rgb(0, 123, 255)',
+              'rgb(253, 126, 20)',
+              'rgb(220, 53, 69)',
+            ],
+            borderWidth: 3,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: [
+              `Last 100 Requests as of ${new Date().toLocaleDateString(
+                'en-US'
+              )}`,
+            ],
+          },
+          legend: { display: true },
         },
       },
     });
@@ -113,8 +167,8 @@ export class AppComponent implements OnInit {
       (res) => {
         console.log((res as { traces: Trace[] }).traces);
         this.processTraces((res as { traces: Trace[] }).traces);
-
         this.initializeBarChart();
+        this.initializePieChart();
       },
       (error: HttpErrorResponse) => {
         console.error(error.message);
