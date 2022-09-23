@@ -169,7 +169,16 @@
         </thead>
         <tbody>
           <tr
-            *ngFor="let trace of traceList"
+            *ngFor="
+              let trace of traceList
+                | paginate
+                  : {
+                      id: 'trace-list',
+                      itemsPerPage: pageSize,
+                      currentPage: page,
+                      totalItems: traceList?.length
+                    }
+            "
             style="cursor: pointer"
             (click)="onSelectTrace(trace)"
           >
@@ -202,13 +211,13 @@
           </tr>
         </tbody>
       </table>
-      <!-- <pagination-controls
+      <pagination-controls
         class="text-center"
         id="trace-list"
         (pageChange)="page = $event"
-        maxSize="10"
-        directionLinks="true"
-      ></pagination-controls> -->
+        [maxSize]="10"
+        [directionLinks]="true"
+      ></pagination-controls>
     </div>
   </div>
 

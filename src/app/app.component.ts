@@ -45,6 +45,8 @@ export class AppComponent implements OnInit {
   public timestamp = 0;
   public barChart!: Chart;
   public pieChart!: Chart;
+  public readonly pageSize = 10;
+  public page = 1;
 
   constructor(private dashboardService: AdminDashboardService) {}
 
