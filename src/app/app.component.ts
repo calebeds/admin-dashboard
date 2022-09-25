@@ -159,6 +159,20 @@ export class AppComponent implements OnInit {
     });
   }
 
+  public exportTableToExcel(): void {
+    const downloadLink = document.createElement('a');
+    const dataType = 'application/vnd.ms-excel';
+    const table = document.getElementById('httptrace-table');
+    const tableHtml = table?.outerHTML.replace(/ /g, '%20'); //Replace all space with %20
+    const fileName = 'httptrace.xls';
+
+    document.body.appendChild(downloadLink);
+    downloadLink.href = `data:${dataType}, ${tableHtml}`;
+    downloadLink.download = fileName;
+    downloadLink.click();
+    downloadLink.remove();
+  }
+
   public onSelectTrace(trace: Trace): void {
     this.selectedTrace = trace;
     document.getElementById('trace-modal')?.click(); //Click hidden button to open modal
@@ -236,7 +250,9 @@ export class AppComponent implements OnInit {
   }
 
   private processTraces(traces: Trace[]): void {
-    this.traceList = traces;
+    this.traceList = traces.filter((trace) => {
+      return trace.request.uri.includes('actuator');
+    });
     this.traceList?.forEach((trace) => {
       switch (trace.response.status) {
         case 200:
